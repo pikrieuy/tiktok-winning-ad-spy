@@ -14,7 +14,8 @@ sys.path.insert(0, "/root/winning-ad-spy")
 from engine.tiktok_ad_spy import TikTokTopAdSpy, OBJECTIVE_PRODUCT_SALES, OBJECTIVE_CONVERSIONS, OBJECTIVE_LEADS
 
 def cmd_top_ads(args):
-    print(f"\n🔍 Memindai Iklan Paling Menghasilkan di TikTok ({args.country}, Periode: {args.period} Hari)...")
+    cat_label = f", Kategori: {args.category.upper()}" if args.category else ""
+    print(f"\n🔍 Memindai Iklan Paling Menghasilkan di TikTok ({args.country}{cat_label}, Periode: {args.period} Hari)...")
     spy = TikTokTopAdSpy()
     ads = spy.fetch_top_ads(
         country_code=args.country,
@@ -22,6 +23,7 @@ def cmd_top_ads(args):
         objective=args.objective,
         limit=args.limit,
         order_by=args.sort,
+        category=args.category,
         enrich_retention=args.retention,
         filter_authentic_only=args.filter_authentic
     )
@@ -96,6 +98,7 @@ def main():
     p_top.add_argument("--period", type=int, default=30, choices=[7, 30, 180], help="Periode hari (7, 30, 180)")
     p_top.add_argument("--objective", type=int, default=OBJECTIVE_PRODUCT_SALES, choices=[15, 3, 8], help="15=Product Sales, 3=Conversions, 8=Leads")
     p_top.add_argument("--sort", default="cvr", choices=["cvr", "like", "ctr"], help="Urutkan berdasarkan: cvr (konversi), like, ctr")
+    p_top.add_argument("--category", choices=["food", "otomotif", "beauty", "fashion", "education", "tech"], help="Persempit ceruk: food (makanan), otomotif (mobil/motor), beauty (skincare), fashion (baju/sepatu), education, tech")
     p_top.add_argument("--limit", type=int, default=5, help="Jumlah iklan yang diambil (max 50)")
     p_top.add_argument("--retention", action="store_true", help="Bedah kurva retensi hook detik ke-2 & ke-6")
     p_top.add_argument("--filter-authentic", action="store_true", help="🛡️ Saring & buang video AI pendek (<12s) dan bot vanity likes palsu")

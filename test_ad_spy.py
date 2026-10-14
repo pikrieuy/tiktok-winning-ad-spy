@@ -7,9 +7,16 @@ Tests:
 4. Anti-Bot and Anti-AI-Slop mathematical evaluator.
 """
 import unittest
-from engine.tiktok_ad_spy import TikTokTopAdSpy, TIKTOK_SALT
+from engine.tiktok_ad_spy import TikTokTopAdSpy, TIKTOK_SALT, CATEGORY_MAP
 
 class TestTikTokAdSpy(unittest.TestCase):
+    def test_category_mapping(self):
+        self.assertIn("food", CATEGORY_MAP)
+        self.assertIn("otomotif", CATEGORY_MAP)
+        self.assertIn("beauty", CATEGORY_MAP)
+        self.assertEqual(CATEGORY_MAP["food"], "27000000000")
+        self.assertEqual(CATEGORY_MAP["otomotif"], "11000000000")
+
     def test_signature_algorithm(self):
         anon_id = "test-uuid-12345"
         ts = 1791850000

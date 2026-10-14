@@ -23,6 +23,26 @@ OBJECTIVE_PRODUCT_SALES = 15
 OBJECTIVE_CONVERSIONS = 3
 OBJECTIVE_LEADS = 8
 
+# Human-friendly Industry Categories mapping:
+CATEGORY_MAP = {
+    "food": "27000000000",       # Food & Beverage
+    "fnb": "27000000000",
+    "makanan": "27000000000",
+    "otomotif": "11000000000",   # Vehicle & Transportation
+    "vehicle": "11000000000",
+    "mobil": "11000000000",
+    "motor": "11000000000",
+    "beauty": "14000000000",     # Beauty & Personal Care
+    "skincare": "14000000000",
+    "fashion": "22000000000",    # Apparel & Accessories
+    "baju": "22000000000",
+    "education": "10000000000",  # Education & Training
+    "kursus": "10000000000",
+    "tech": "15000000000",       # Tech & Electronics
+    "gadget": "15000000000",
+    "game": "25000000000"        # Games
+}
+
 class TikTokTopAdSpy:
     def __init__(self, profile: str = "chrome124", timeout: int = 15):
         self.profile = profile
@@ -69,11 +89,13 @@ class TikTokTopAdSpy:
         page: int = 1,
         limit: int = 20,
         order_by: str = "like",
+        category: Optional[str] = None,
         enrich_retention: bool = False,
         filter_authentic_only: bool = False
     ) -> List[Dict[str, Any]]:
         """
         Fetches top-performing ads meeting specified criteria.
+        Optional category: 'food', 'otomotif', 'beauty', 'fashion', 'education', 'tech'.
         Optional enrich_retention fetches second-by-second keyframe curves.
         Optional filter_authentic_only eliminates suspected SMM bot injections & low-effort AI slop.
         """
@@ -87,6 +109,9 @@ class TikTokTopAdSpy:
             "objective": objective,
             "order_by": order_by
         }
+        if category:
+            ind_code = CATEGORY_MAP.get(category.lower(), category)
+            params["industry"] = ind_code
 
         try:
             resp = self.session.get(
