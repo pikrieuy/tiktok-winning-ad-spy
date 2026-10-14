@@ -9,23 +9,35 @@
       "description": "Select the target market country code (e.g. ID for Indonesia, US for United States, SG for Singapore, MY for Malaysia).",
       "default": "ID",
       "prefill": "ID",
+      "editor": "select",
       "enum": ["ID", "US", "SG", "MY", "PH", "VN", "TH", "GB", "BR"]
     },
+    "category": {
+      "title": "Niche Category",
+      "type": "string",
+      "description": "Filter by industry niche: all, food, otomotif, beauty, fashion, education, tech.",
+      "default": "all",
+      "prefill": "all",
+      "editor": "select",
+      "enum": ["all", "food", "otomotif", "beauty", "fashion", "education", "tech"]
+    },
     "period": {
-      "title": "Lookback Period",
-      "type": "integer",
-      "description": "Historical duration to find proven, long-running winning campaigns.",
-      "default": 30,
-      "prefill": 30,
-      "enum": [7, 30, 180]
+      "title": "Lookback Period (Days)",
+      "type": "string",
+      "description": "Historical duration to find proven winning campaigns (7, 30, or 180 days).",
+      "default": "30",
+      "prefill": "30",
+      "editor": "select",
+      "enum": ["7", "30", "180"]
     },
     "objective": {
       "title": "Campaign Objective",
-      "type": "integer",
+      "type": "string",
       "description": "Filter by advertiser goal. 15 = Product Sales (Real Checkout Conversion), 3 = Conversions, 8 = Lead Generation.",
-      "default": 15,
-      "prefill": 15,
-      "enum": [15, 3, 8]
+      "default": "15",
+      "prefill": "15",
+      "editor": "select",
+      "enum": ["15", "3", "8"]
     },
     "sortBy": {
       "title": "Sort Metric",
@@ -33,6 +45,7 @@
       "description": "Choose sorting order for top ads: cvr (Conversion Rate), like (Popularity), or ctr (Click-Through Rate).",
       "default": "cvr",
       "prefill": "cvr",
+      "editor": "select",
       "enum": ["cvr", "like", "ctr"]
     },
     "maxResults": {

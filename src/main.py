@@ -17,6 +17,8 @@ async def main() -> None:
         actor_input: Dict[str, Any] = await Actor.get_input() or {}
         
         country_code = str(actor_input.get("countryCode", "ID")).upper()
+        category_raw = str(actor_input.get("category", "all")).lower()
+        category = None if category_raw in ["all", "semua", ""] else category_raw
         period = int(actor_input.get("period", 30))
         objective = int(actor_input.get("objective", OBJECTIVE_PRODUCT_SALES))
         order_by = str(actor_input.get("sortBy", "cvr")).lower()
@@ -26,8 +28,8 @@ async def main() -> None:
 
         Actor.log.info(
             f"🚀 Memulai pindaian TikTok Winning Ads | Negara: {country_code} | "
-            f"Periode: {period} hari | Sort: {order_by} | Target: {max_results} iklan | "
-            f"Filter Anti-Bot/AI: {'AKTIF' if filter_authentic else 'NONAKTIF'}"
+            f"Kategori: {category_raw.upper()} | Periode: {period} hari | Sort: {order_by} | "
+            f"Target: {max_results} iklan | Filter Anti-Bot/AI: {'AKTIF' if filter_authentic else 'NONAKTIF'}"
         )
 
         spy = TikTokTopAdSpy()
@@ -45,6 +47,7 @@ async def main() -> None:
                 page=page,
                 limit=batch_size,
                 order_by=order_by,
+                category=category,
                 enrich_retention=enrich_retention,
                 filter_authentic_only=filter_authentic
             )
