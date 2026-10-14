@@ -1,0 +1,20 @@
+{
+  "actorSpecification": 1,
+  "name": "tiktok-winning-ad-spy",
+  "title": "TikTok Winning Ads & Creative Hook Intelligence",
+  "description": "Extract top-converting TikTok e-commerce ads with 2s & 6s Hook Retention Analytics, CTR, likes, and direct 720p MP4 download links. Filter by country and objective without login.",
+  "version": "1.0.0",
+  "meta": {
+    "templateId": "python-empty"
+  },
+  "dockerfilePath": "./Dockerfile",
+  "environmentVariables": {
+    "PYTHONUNBUFFERED": "1"
+  },
+  "categories": [
+    "ECOMMERCE",
+    "SOCIAL_MEDIA",
+    "MARKETING",
+    "LEAD_GENERATION"
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "title": "TikTok Winning Ad Spy Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "countryCode": {
+      "title": "Country / Market",
+      "type": "string",
+      "description": "Select the target market country code (e.g. ID for Indonesia, US for United States, SG for Singapore, MY for Malaysia).",
+      "default": "ID",
+      "prefill": "ID",
+      "enum": ["ID", "US", "SG", "MY", "PH", "VN", "TH", "GB", "BR"]
+    },
+    "period": {
+      "title": "Lookback Period",
+      "type": "integer",
+      "description": "Historical duration to find proven, long-running winning campaigns.",
+      "default": 30,
+      "prefill": 30,
+      "enum": [7, 30, 180]
+    },
+    "objective": {
+      "title": "Campaign Objective",
+      "type": "integer",
+      "description": "Filter by advertiser goal. 15 = Product Sales (Real Checkout Conversion), 3 = Conversions, 8 = Lead Generation.",
+      "default": 15,
+      "prefill": 15,
+      "enum": [15, 3, 8]
+    },
+    "sortBy": {
+      "title": "Sort Metric",
+      "type": "string",
+      "description": "Choose sorting order for top ads: cvr (Conversion Rate), like (Popularity), or ctr (Click-Through Rate).",
+      "default": "cvr",
+      "prefill": "cvr",
+      "enum": ["cvr", "like", "ctr"]
+    },
+    "maxResults": {
+      "title": "Max Ads to Extract",
+      "type": "integer",
+      "description": "Total number of winning ads to return.",
+      "default": 10,
+      "prefill": 10,
+      "minimum": 1,
+      "maximum": 200
+    },
+    "enrichHookRetention": {
+      "title": "Enrich Hook Retention Curve (2s & 6s)",
+      "type": "boolean",
+      "description": "When enabled, fetches second-by-second audience retention curves and grades the opening hook (GOD_TIER >= 30%, STRONG >= 20%).",
+      "default": true,
+      "prefill": true
+    }
+  },
+  "required": ["countryCode"]
+}
