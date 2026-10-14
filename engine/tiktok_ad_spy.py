@@ -69,11 +69,13 @@ class TikTokTopAdSpy:
         page: int = 1,
         limit: int = 20,
         order_by: str = "like",
-        enrich_retention: bool = False
+        enrich_retention: bool = False,
+        filter_authentic_only: bool = False
     ) -> List[Dict[str, Any]]:
         """
         Fetches top-performing ads meeting specified criteria.
         Optional enrich_retention fetches second-by-second keyframe curves.
+        Optional filter_authentic_only eliminates suspected SMM bot injections & low-effort AI slop.
         """
         url = f"{API_BASE_URL}/top_ads/v2/list"
         headers = self._get_auth_headers()
@@ -98,17 +100,82 @@ class TikTokTopAdSpy:
                 if data.get("code") == 0:
                     materials = data.get("data", {}).get("materials", [])
                     cleaned = self._normalize_ads(materials)
-                    if enrich_retention:
-                        for ad in cleaned:
-                            curve = self.fetch_retention_curve(ad["ad_id"])
-                            ad.update(curve)
-                    return cleaned
+                    
+                    filtered_ads = []
+                    for ad in cleaned:
+                        curve_data = self.fetch_retention_curve(ad["ad_id"])
+                        ad.update(curve_data)
+                        
+                        auth_eval = self.evaluate_ad_authenticity(ad)
+                        ad.update(auth_eval)
+
+                        if filter_authentic_only and not auth_eval["is_authentic"]:
+                            logging.info(f"Filtering out ad {ad['ad_id']}: {auth_eval['rejection_reason']}")
+                            continue
+                        
+                        filtered_ads.append(ad)
+
+                    return filtered_ads
                 else:
                     logging.warning(f"[TIKTOK AD SPY API ERROR] Code {data.get('code')}: {data.get('msg')}")
         except Exception as e:
             logging.error(f"[TIKTOK AD SPY FETCH EXCEPTION] {e}")
 
         return []
+
+    @staticmethod
+    def evaluate_ad_authenticity(ad: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Anti-Bot & Anti-AI-Slop Mathematical Evaluator.
+        Disqualifies:
+        1. Overly short clips (< 12s) - typical lazy static slideshows.
+        2. Vanity Disconnect (likes > 15,000 but CTR < 0.25%) - typical SMM bot-injected Spark Ads.
+        3. Weak Hook Drop-Off (2s viewer retention < 18%) - failed hook with fast viewer abandonment.
+        """
+        duration = ad.get("duration_seconds", 0.0)
+        likes = ad.get("likes", 0)
+        ctr = ad.get("ctr_pct", 0.0)
+        sec2_ret = ad.get("hook_retention_2s_pct")
+        sec6_ret = ad.get("hold_retention_6s_pct")
+
+        # Check 1: Duration threshold
+        if duration > 0 and duration < 12.0:
+            return {
+                "is_authentic": False,
+                "authenticity_status": "DISQUALIFIED_TOO_SHORT",
+                "rejection_reason": f"Durasi {duration:.1f}s terlalu pendek (< 12s), indikasi video statis/AI slideshow."
+            }
+
+        # Check 2: Vanity Disconnect (Injected Bot Likes)
+        if likes > 15000 and ctr < 0.25:
+            return {
+                "is_authentic": False,
+                "authenticity_status": "SUSPECTED_SMM_BOT_INJECTION",
+                "rejection_reason": f"Likes masif ({likes:,}) tetapi CTR ({ctr}%) di bawah batas wajar (indikasi bot panel)."
+            }
+
+        # Check 3: Hook Retention Curve
+        if sec2_ret is not None and sec2_ret < 18.0:
+            return {
+                "is_authentic": False,
+                "authenticity_status": "WEAK_HOOK_SLOP",
+                "rejection_reason": f"Retensi detik ke-2 ({sec2_ret}%) di bawah 18%, audiens mayoritas langsung swipe."
+            }
+
+        # Check 4: Cliff Drop-off (Clickbait spike followed by immediate drop)
+        if sec2_ret is not None and sec6_ret is not None and sec2_ret > 0:
+            if sec6_ret < (sec2_ret * 0.20):
+                return {
+                    "is_authentic": False,
+                    "authenticity_status": "ABRUPT_DROP_OFF",
+                    "rejection_reason": f"Penonton anjlok drastis dari 2s ({sec2_ret}%) ke 6s ({sec6_ret}%)."
+                }
+
+        return {
+            "is_authentic": True,
+            "authenticity_status": "VERIFIED_AUTHENTIC",
+            "rejection_reason": None
+        }
 
     def fetch_retention_curve(self, material_id: str) -> Dict[str, Any]:
         """

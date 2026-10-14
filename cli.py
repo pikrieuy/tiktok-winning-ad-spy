@@ -22,7 +22,8 @@ def cmd_top_ads(args):
         objective=args.objective,
         limit=args.limit,
         order_by=args.sort,
-        enrich_retention=args.retention
+        enrich_retention=args.retention,
+        filter_authentic_only=args.filter_authentic
     )
 
     if not ads:
@@ -97,6 +98,7 @@ def main():
     p_top.add_argument("--sort", default="cvr", choices=["cvr", "like", "ctr"], help="Urutkan berdasarkan: cvr (konversi), like, ctr")
     p_top.add_argument("--limit", type=int, default=5, help="Jumlah iklan yang diambil (max 50)")
     p_top.add_argument("--retention", action="store_true", help="Bedah kurva retensi hook detik ke-2 & ke-6")
+    p_top.add_argument("--filter-authentic", action="store_true", help="🛡️ Saring & buang video AI pendek (<12s) dan bot vanity likes palsu")
     p_top.add_argument("--download-dir", help="Folder tujuan untuk mengunduh file video MP4 720p")
     p_top.add_argument("--export", help="Path file JSON untuk menyimpan hasil")
 

@@ -22,10 +22,12 @@ async def main() -> None:
         order_by = str(actor_input.get("sortBy", "cvr")).lower()
         max_results = int(actor_input.get("maxResults", 10))
         enrich_retention = bool(actor_input.get("enrichHookRetention", True))
+        filter_authentic = bool(actor_input.get("filterAuthenticOnly", True))
 
         Actor.log.info(
             f"🚀 Memulai pindaian TikTok Winning Ads | Negara: {country_code} | "
-            f"Periode: {period} hari | Sort: {order_by} | Target: {max_results} iklan"
+            f"Periode: {period} hari | Sort: {order_by} | Target: {max_results} iklan | "
+            f"Filter Anti-Bot/AI: {'AKTIF' if filter_authentic else 'NONAKTIF'}"
         )
 
         spy = TikTokTopAdSpy()
@@ -43,7 +45,8 @@ async def main() -> None:
                 page=page,
                 limit=batch_size,
                 order_by=order_by,
-                enrich_retention=enrich_retention
+                enrich_retention=enrich_retention,
+                filter_authentic_only=filter_authentic
             )
 
             if not batch:
